@@ -1,6 +1,6 @@
+mod api;
 mod commands;
 
-use std::env;
 use dotenv;
 use serenity::{
     async_trait,
@@ -9,8 +9,9 @@ use serenity::{
         gateway::Ready,
         id::GuildId,
     },
-    prelude::*
+    prelude::*,
 };
+use std::env;
 
 struct Handler;
 
@@ -27,7 +28,9 @@ impl EventHandler for Handler {
         );
 
         let commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
-            commands.create_application_command(|command| commands::ping::register(command))
+            commands
+                .create_application_command(|command| commands::ping::register(command))
+                .create_application_command(|command| commands::random::register(command))
         })
         .await;
 
@@ -43,6 +46,7 @@ impl EventHandler for Handler {
 
             let content = match command.data.name.as_str() {
                 "ping" => commands::ping::run(&command.data.options),
+                "random" => commands::random::run(&command.data.options).await,
                 _ => "not implemented :(".to_string(),
             };
 
