@@ -22,9 +22,8 @@ pub async fn help(
 
 /// Get a random dog picture
 #[poise::command(prefix_command, slash_command)]
-pub async fn random(
-    ctx: Context<'_>,
-) -> Result<(), Error> {
-    ctx.say(format!("{}", crate::api::call::random().await.message)).await?;
+pub async fn random(ctx: Context<'_>) -> Result<(), Error> {
+    ctx.say(format!("{}", crate::api::call::random().await.message))
+        .await?;
     Ok(())
 }
