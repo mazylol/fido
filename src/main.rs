@@ -50,8 +50,26 @@ async fn main() {
         ..Default::default()
     };
 
-    poise::Framework::builder()
-        .token(var("DISCORD_TOKEN").expect("Missing `DISCORD_TOKEN` env var!"))
+    if var("PROD").is_ok() {
+        println!("Running in production mode!");
+        poise::Framework::builder()
+            .token(var("DISCORD_TOKEN").expect("Missing `DISCORD_TOKEN` env var!"))
+            .setup(move |ctx, _ready, framework| {
+                Box::pin(async move {
+                    println!("Logged in as {}", _ready.user.name);
+                    poise::builtins::register_globally(ctx, &framework.options().commands).await?;
+                    Ok(Data {})
+                })
+            })
+            .options(options)
+            .intents(serenity::GatewayIntents::non_privileged())
+            .run()
+            .await
+            .unwrap();
+    } else {
+        println!("Running in development mode!");
+        poise::Framework::builder()
+        .token(var("DEV_DISCORD_TOKEN").expect("Missing `DEV_DISCORD_TOKEN` env var!"))
         .setup(move |ctx, _ready, framework| {
             Box::pin(async move {
                 println!("Logged in as {}", _ready.user.name);
@@ -71,9 +89,10 @@ async fn main() {
         })
         .options(options)
         .intents(
-            serenity::GatewayIntents::non_privileged() | serenity::GatewayIntents::MESSAGE_CONTENT,
+            serenity::GatewayIntents::non_privileged(),
         )
         .run()
         .await
         .unwrap();
+    }
 }
