@@ -3,7 +3,7 @@ use crate::{Context, Error};
 use super::api::call;
 
 /// Show help about command(s)
-#[poise::command(prefix_command, track_edits, slash_command)]
+#[poise::command(slash_command)]
 pub async fn help(
     ctx: Context<'_>,
     #[description = "Specific command to show help about"]
@@ -23,7 +23,7 @@ pub async fn help(
 }
 
 /// Get a random dog picture
-#[poise::command(prefix_command, slash_command)]
+#[poise::command(slash_command)]
 pub async fn random(
     ctx: Context<'_>,
     #[description = "Breed of dog to get a random picture of"] breed: Option<String>,
